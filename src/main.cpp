@@ -60,6 +60,12 @@ int parse_args(int argc, char* argv[]) {
     }
   }
 
+  if (argc <= 1) {
+    cerr << "Missing arguments, printing help details" << endl;
+    help = true;
+    return 1;
+  }
+
   int ind = optind;
   if(pattern_file_path.size() > 0) {
     string pattern;
@@ -88,8 +94,7 @@ int parse_args(int argc, char* argv[]) {
   }
 
   while(ind < argc) {
-    string file_name = string(argv[ind++]);
-    files_list.push_back(file_name);
+    files_list.push_back(string(argv[ind++]));
   }
 
   return 0;
@@ -112,22 +117,29 @@ int main(int argc, char* argv[]) {
 
   for(auto file_name: files_list) {
     string line = "a";
-    file = new std::ifstream();
+    int line_count = 1;
+
+    file = new ifstream();
     file->open(file_name);
     if(!file->is_open()) {
-      cout<<"DEU ERRO NO FILE"<<endl;
+      cerr << "File '" << file_name << "' not found or could not be opened." << endl;
+      return 0;
     }
+
     while(!file->eof()) {
       getline(*file, line);
       bool found_oc = 0;
       for(auto pat: pattern_list) {
         vector<int> line_ocs = kmpMatchPattern(line, pat);
         if(line_ocs.size() > 0) {
-          cout << file << line <<endl;
+          if (!only_count) {
+            cout << file_name << " " << line_count << line <<endl;
+          }
           occ++;
           break;
         }
       }
+      line_count++;
     }
   }
   cout<< "Total occurrences: " << occ <<endl;

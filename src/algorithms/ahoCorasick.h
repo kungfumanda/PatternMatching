@@ -66,6 +66,5 @@ int ahoCorasickMatchPattern(const string &txt, const string &pat) {
   clearData();
   setPattern(pat);
   prepareFails();
-  // prepare();
   return search(txt);
 }
