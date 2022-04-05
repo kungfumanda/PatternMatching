@@ -13,28 +13,28 @@ const int delta_size = 256;
 map<ukkState, ukkState> delta[delta_size];
 string pattern;
 int pattern_size;
-int err;
+int err_ukk;
 
 vector<int> make_transition(const vector<int>& base, int chr) {
   vector<int> state = vector<int>(pattern_size + 1, 0);
   for(int i = 1; i <= pattern_size; i++) {
-      state[i] = min(min(base[i] + 1, base[i-1] + (chr != pattern[i-1] ? 1 : 0)), min(err+1, state[i-1]+1));
+      state[i] = min(min(base[i] + 1, base[i-1] + (chr != pattern[i-1] ? 1 : 0)), min(err_ukk+1, state[i-1]+1));
   }
   return state;
 }
 
-void clearData() {
+void clearDataUkk() {
   F.clear();
   for(int i = 0; i < delta_size; i++){
     delta[i].clear();
   }
 }
 
-void setPattern(string s, int error = 0) {
-  err = error;
+void setPattern(string s, int err_ukkor = 0) {
+  err_ukk = err_ukkor;
   pattern = s;
   pattern_size = pattern.size();
-  clearData();
+  clearDataUkk();
 
   vector<int> state;
   for(int i = 0, sze = s.length(); i <= sze; i++) {
@@ -63,7 +63,7 @@ void setPattern(string s, int error = 0) {
         q.push(next_state_id);
       }
 
-      if(next_state[pattern_size] <= err) {
+      if(next_state[pattern_size] <= err_ukk) {
         F.insert(next_state_id);
       }
 
@@ -72,7 +72,7 @@ void setPattern(string s, int error = 0) {
   }
 }
 
-vector<int> search(const string& txt) {
+vector<int> searchUkk(const string& txt) {
   int state = 1, occ = 0;
   vector<int> ans;
   for(int i = 0; i < txt.size(); i++) {
@@ -84,22 +84,13 @@ vector<int> search(const string& txt) {
   return ans;
 }
 
-vector<int> ukkMatchPattern(const string &txt, const string &pat, int err = 0) {
-  clearData();
-  setPattern(pat, err);
-  vector<int> end_pat = search(txt);
+vector<int> ukkMatchPattern(const string &txt, const string &pat, int err_ukk = 0) {
+  clearDataUkk();
+  setPattern(pat, err_ukk);
+  vector<int> end_pat = searchUkk(txt);
   vector<int> ans;
   for(int end: end_pat) {
     ans.push_back(end - pat.size() + 1);
   }
   return ans;
-}
-
-int main() {
-  string txt = "abazzzzzzzcaba";
-  string pat = "aba";
-  vector<int> ans = ukkMatchPattern(txt, pat, 1);
-  for (int x: ans) {
-    cout<<x<<endl;
-  }
 }

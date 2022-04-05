@@ -2,6 +2,12 @@
 #include <string>
 #include <getopt.h>
 #include "algorithms/kmp.h"
+#include "algorithms/ahoCorasick.h"
+#include "algorithms/ukkonen.h"
+#include "algorithms/brute.h"
+#include "algorithms/wumamber.h"
+
+
 #include <fstream>
 #include <set>
 #include <map>
@@ -100,6 +106,54 @@ int parse_args(int argc, char* argv[]) {
   return 0;
 }
 
+int runAlg(string line, string pat, string alg, int err = 0) {
+  if(alg == "BruteForce") {
+    return bruteMatchPattern(line, pat, err).size();
+  }else if (alg == "KMP") {
+    return kmpMatchPattern(line, pat);
+  }else if (alg == "Ukkonen") {
+    return ukkMatchPattern(line, pat, err).size();
+  }else if (alg == "WuMamber") {
+    return wumSearch(line, pat, err);
+  }else if (alg == "AhoCorasick") {
+    return ahoCorasickMatchPattern(line, pat);
+  }else {
+    cerr << "Algorithm not available, using Ukkonen as default." << endl;
+    return ukkMatchPattern(line, pat, err).size();
+  }
+}
+
+int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, string alg) {
+  int occ_count = 0;
+  for(auto file_name: files_list) {
+    string line = "a";
+    int line_count = 1;
+    file = new ifstream();
+    file->open(file_name);
+    if(!file->is_open()) {
+      cerr << "File '" << file_name << "' not found or could not be opened." << endl;
+      return 0;
+    }
+
+    while(!file->eof()) {
+      getline(*file, line);
+      bool found_oc = 0;
+      for(auto pat: pattern_list) {
+        int line_ocs = runAlg(line, pat, alg, err);
+        if(line_ocs > 0) {
+          if (!only_count) {
+            cout << file_name << " " << line_count << " " << line <<endl;
+          }
+          occ_count++;
+          break;
+        }
+      }
+      line_count++;
+    }
+  }
+  return occ_count;
+}
+
 int main(int argc, char* argv[]) {
   parse_args(argc, argv);
   if(help) {
@@ -113,34 +167,6 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  int occ = 0;
-
-  for(auto file_name: files_list) {
-    string line = "a";
-    int line_count = 1;
-
-    file = new ifstream();
-    file->open(file_name);
-    if(!file->is_open()) {
-      cerr << "File '" << file_name << "' not found or could not be opened." << endl;
-      return 0;
-    }
-
-    while(!file->eof()) {
-      getline(*file, line);
-      bool found_oc = 0;
-      for(auto pat: pattern_list) {
-        vector<int> line_ocs = kmpMatchPattern(line, pat);
-        if(line_ocs.size() > 0) {
-          if (!only_count) {
-            cout << file_name << " " << line_count << line <<endl;
-          }
-          occ++;
-          break;
-        }
-      }
-      line_count++;
-    }
-  }
+  int occ = searchWithSimplePat(files_list, pattern_list, algorithm);
   cout<< "Total occurrences: " << occ <<endl;
 }

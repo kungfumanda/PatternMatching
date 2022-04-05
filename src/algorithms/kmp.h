@@ -4,14 +4,14 @@
 
 using namespace std;
 
-vector<int> getBorder(string str) {
-  int n = str.size();
+vector<int> getBorder(string pat) {
+  int n = pat.size();
   vector<int> border(n, -1);
   for(int i = 1, j = -1; i < n; i++) {
-    while(j >= 0 && str[i] != str[j + 1]) {
+    while(j >= 0 && pat[i] != pat[j + 1]) {
       j = border[j];
     }
-    if(str[i] == str[j + 1]) {
+    if(pat[i] == pat[j + 1]) {
       j++;
     }
     border[i] = j;
@@ -19,9 +19,7 @@ vector<int> getBorder(string str) {
   return border;
 }
 
-vector<int> kmpMatchPattern(const string &txt, const string &pat, const vector<int> &border) {
-  int freq = 0;
-  vector<int> ans;
+int kmpMatchPattern(const string &txt, const string &pat, const vector<int> &border) {
   for(int i = 0, j = -1; i < txt.size(); i++) {
     while(j >= 0 && txt[i] != pat[j + 1]) {
       j = border[j];
@@ -29,17 +27,14 @@ vector<int> kmpMatchPattern(const string &txt, const string &pat, const vector<i
     if(pat[j + 1] == txt[i]) {
       j++;
     }
-    if(j + 1 == (int) pat.size()) {
-      //found occurence
-      ans.push_back(i - pat.size() + 1);
-      freq++;
-      j = border[j];
+    if(j + 1 == pat.size()) {
+      return 1;
     }
   }
-  return ans;
+  return 0;
 }
 
-vector<int> kmpMatchPattern (const string &txt, const string &pat) {
-  vector<int> border = getBorder(txt);
+int kmpMatchPattern (const string &txt, const string &pat) {
+  vector<int> border = getBorder(pat);
   return kmpMatchPattern(txt, pat, border);
 }

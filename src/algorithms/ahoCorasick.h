@@ -9,7 +9,7 @@ const int charSize = 256;
 vector<int> fail, terminal;
 vector<vector<int>> trie;
 
-void setPattern(string s, int err = 0) {  
+void addPatternAho(string s, int err = 0) {  
   int node = 0, pos = 0;
   for (char c: s) {
     if (trie[node][c] == -1) {
@@ -30,7 +30,7 @@ void clearData() {
   trie.push_back(vector<int>(256, -1));
 }
 
-void prepareFails(){
+void addFails(){
   queue<int> q;
   q.push(0);
   while(!q.empty()) {
@@ -50,21 +50,19 @@ void prepareFails(){
 }
 
 int search(string s) {
-  int state = 0;
+  int node = 0;
   for(char c: s) {
-    while(state && trie[state][c]==-1)
-      state = fail[state];
-    if(trie[state][c]!=-1)
-      state = trie[state][c];
-    if(terminal[state])
+    node = trie[node][c];
+    if(terminal[node]) {
       return 1;
+    }
   }
   return 0;
 }
 
 int ahoCorasickMatchPattern(const string &txt, const string &pat) {
   clearData();
-  setPattern(pat);
-  prepareFails();
+  addPatternAho(pat);
+  addFails();
   return search(txt);
 }

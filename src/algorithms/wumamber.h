@@ -11,13 +11,13 @@ using namespace std;
 vector<vector<ull>> masks;
 int ascii_l = 256;
 int sz;
-int err;
+int err_wu;
 ull literal;
 
 void orr(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
         mas[i] |= nas[i];                      
-    }  
+    } 
 }
 
 void shift(vector<ull> &mas){
@@ -40,14 +40,14 @@ void shiftOr(vector<ull> &mask, vector<ull> &charmask, int &len) {
 
 void andd(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
-            mas[i] &= nas[i];                      
-        }  
+        mas[i] &= nas[i];                      
+    }  
 }
 
-vector<ull> compute(int c, vector<vector<ull>> &matchs, vector<vector<ull>> &prevs, vector<ull> &temp, int aux, int err, int sz) {
+vector<ull>  generateMatch(int c, vector<vector<ull>> &matchs, vector<vector<ull>> &prevs, vector<ull> &temp, int aux, int err_wu, int sz) {
     vector<ull> &match = matchs[0]; //starts compute
         
-    for(int i=0; i<err; i ++){ //changes the prev
+    for(int i=0; i<err_wu; i ++){ //changes the prev
         for(int j=0; j<sz; j++) {
             prevs[i][j] = matchs[i][j];
         }
@@ -55,7 +55,7 @@ vector<ull> compute(int c, vector<vector<ull>> &matchs, vector<vector<ull>> &pre
     
     vector<ull> &mask = masks[c];
     shiftOr(mask, match, aux);
-    for (int r=1; r<(err+1);r++) {
+    for (int r=1; r<(err_wu+1);r++) {
         vector<ull> &prev = prevs[r-1];
         match = matchs[r];
         shiftOr(mask,match,aux);
@@ -73,7 +73,7 @@ vector<ull> compute(int c, vector<vector<ull>> &matchs, vector<vector<ull>> &pre
     return match;
 }
 
-void setPattern(string pat, int err) {
+void setPatternWu(string pat, int err_wu) {
 
     sz = ((pat.size() -1) >> 6) + 1;
     literal = 1ll << ((pat.size()-1)%64);
@@ -103,26 +103,26 @@ void setPattern(string pat, int err) {
     }
 }
 
-int search(const string& txt) {
-    vector<vector<ull>> matchs(err+1, vector<ull>(sz, -1));
-    vector<vector<ull>> prevs(err+1, vector<ull>(sz, -1));
+int searchWu(const string& txt) {
+    vector<vector<ull>> matchs(err_wu+1, vector<ull>(sz, -1));
+    vector<vector<ull>> prevs(err_wu+1, vector<ull>(sz, -1));
     vector<ull> temp(sz, -1);
     
     int aux = sz * sizeof(ull);
 
-    for(int i=1; i<err+1;i++) {
+    for(int i=1; i<err_wu+1;i++) {
         matchs[i][sz-1] <<= i;
     }
 
     for(char c: txt) {
-        vector<ull> match = compute(c, matchs, prevs, temp, aux, err, sz);
+        vector<ull> match = generateMatch(c, matchs, prevs, temp, aux, err_wu, sz);
         
         if(~match[0] & literal) {
             return 1;
         }
     }  // ends for char
 
-    vector<ull> match = compute('\n', matchs, prevs, temp, aux, err, sz); 
+    vector<ull> match = generateMatch('\n', matchs, prevs, temp, aux, err_wu, sz); 
     
     if(~match[0] & literal) {
         return 1;
@@ -131,16 +131,8 @@ int search(const string& txt) {
 }
 
 
-int WumSearch(const string &txt, const string &pat, int err = 0) {
+int wumSearch(const string &txt, const string &pat, int err_wu = 0) {
     //cout<<"aa"<<endl;
-    setPattern(pat, err);
-    return search(txt);
-}
-
-int main() {
-    //cout<<"aa"<<endl;
-    string txt = "abcde";
-    string pat = "cde";
-    int ans = WumSearch(txt, pat, 2);
-    cout<<ans<<endl;
+    setPatternWu(pat, err_wu);
+    return searchWu(txt);
 }
