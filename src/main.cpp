@@ -6,8 +6,6 @@
 #include "algorithms/ukkonen.h"
 #include "algorithms/brute.h"
 #include "algorithms/wumamber.h"
-
-
 #include <fstream>
 #include <set>
 #include <map>
