@@ -6,20 +6,21 @@
 
 using namespace std;
 
-unsigned long long** masks;
+#define ull unsigned long long
+
+vector<vector<ull>> masks;
 int ascii_l = 256;
 int sz;
 int err;
-unsigned long long literal;
+ull literal;
 
-
-void orr(unsigned long long* mas, unsigned long long* nas){
+void orr(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
-            mas[i] |= nas[i];                      
-        }  
+        mas[i] |= nas[i];                      
+    }  
 }
 
-void shift(unsigned long long* mas){
+void shift(vector<ull> &mas){
     mas[0] <<= 1;
     
     for(int i=1;i<sz;i++) {
@@ -28,142 +29,105 @@ void shift(unsigned long long* mas){
     }
 }
 
-void shiftOr(unsigned long long* mask, unsigned long long* charmask, int len) {
-    if (mask == NULL) {
-       memset(charmask, -1, len);
-    } else {
+void shiftOr(vector<ull> &mask, vector<ull> &charmask, int &len) {
+    if(mask.size() == 0){
+        mask = vector<ull>(sz, -1);
+    }else {
         shift(charmask);
         orr(mask, charmask);
     }
 }
 
-
-void andd(unsigned long long* mas, unsigned long long* nas){
+void andd(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
             mas[i] &= nas[i];                      
         }  
 }
 
-void setPattern(string pat, int err) {
-
-    if(masks != NULL) {
-        cout<<"nnn"<<endl;
-    }
-
-    sz = ((pat.size() -1) >> 6) + 1;
-    literal = 1ll << (pat.size()%64);
-    unsigned long long mask[sz];
-    memset(mask, -1, sz*sizeof(unsigned long long));
-    mask[sz-1] = -2;
-
-    masks = new unsigned long long*[256];
-    memset(masks,0,ascii_l*sizeof(unsigned long long*));
-    cout<<ascii_l*sizeof(unsigned long long*)<<endl;
-
-    for (char c : pat) {
-        unsigned long long* aux = masks[c];
+vector<ull> compute(int c, vector<vector<ull>> &matchs, vector<vector<ull>> &prevs, vector<ull> &temp, int aux, int err, int sz) {
+    vector<ull> &match = matchs[0]; //starts compute
         
-        if (aux == NULL){
-            masks[c] = new unsigned long long[sz];
-            aux = masks[c];
-            memset(aux, -1, ascii_l*sizeof(unsigned long long));
-        }
-
-        for(int i=0 ; i<sz ; i++) {   //and        
-                aux[i] &= mask[i];                       
-            }     
-        
-        mask[0] <<= 1;                            //shift
-        for(int i=1 ; i<sz ; i++) {           
-            mask[i-1] |= mask[i] >> 63;               
-            mask[i] <<= 1;                         
-        }    
-        mask[sz-1] |= 1; // checar se deveria ser dentro do for    
-    }
-}
-
-int search(const string& txt) {
-    unsigned long long matchs[err+1][sz];
-    unsigned long long prevs[err+1][sz];
-    unsigned long long temp[sz+1];
-    unsigned long long* match;
-    
-    int aux = sz * sizeof(unsigned long long);
-
-    memset(matchs, -1, (err+1)*sz*sizeof(unsigned long long));
-
-    for(int i=1; i<err+1;i++) {
-        matchs[i][sz-1] <<= i;
-    }
-
-    for(char c: txt) {
-        unsigned long long* match;
-        matchs[0]; //starts compute
-        
-        for(int i=0; i<err; i ++){ //changes the prev
-            for(int j=0; j<sz; j++) {
-                prevs[i][j] = matchs[i][j];
-            }
-        }
-        
-        unsigned long long* mask = masks[c];
-        shiftOr(mask, match, aux);
-
-        for (int r=1; r<(err+1);r++) {
-            unsigned long long* prev = prevs[r-1];
-            match = matchs[r];
-            shiftOr(mask,match,aux);
-            
-            for (int i=0; i < sz; i++) {
-                temp[i] = matchs[r-1][i];
-            }
-
-            shift(temp);
-            andd(match,temp);
-            andd(match,prev);
-            shift(prev);
-            andd(match, prev);
-              
-        }       //ends compute
-        
-        if(~match[0] & literal) {
-            return 1;
-        }
-    }  // ends for char
-
-    //starts compute        
     for(int i=0; i<err; i ++){ //changes the prev
         for(int j=0; j<sz; j++) {
             prevs[i][j] = matchs[i][j];
         }
     }
     
-    unsigned long long* mask = masks['\n'];
+    vector<ull> &mask = masks[c];
     shiftOr(mask, match, aux);
-
     for (int r=1; r<(err+1);r++) {
-        unsigned long long* prev = prevs[r-1];
+        vector<ull> &prev = prevs[r-1];
         match = matchs[r];
         shiftOr(mask,match,aux);
         
         for (int i=0; i < sz; i++) {
             temp[i] = matchs[r-1][i];
         }
-
         shift(temp);
         andd(match,temp);
         andd(match,prev);
         shift(prev);
         andd(match, prev);
-            
-    }       //ends compute
+    }
+
+    return match;
+}
+
+void setPattern(string pat, int err) {
+
+    sz = ((pat.size() -1) >> 6) + 1;
+    literal = 1ll << ((pat.size()-1)%64);
+    vector<ull> mask(sz, -1);
+    mask[sz-1] = -2;
+
+    masks = vector<vector<ull>>(256);
+
+    for (char c : pat) {
+        vector<ull> &aux = masks[c];
+
+        if(aux.size()==0) {
+            masks[c] = vector<ull>(sz, -1);
+            aux = masks[c];
+        }
+
+        for(int i=0 ; i<sz ; i++) {   //and        
+            aux[i] &= mask[i];                       
+        }
+        
+        mask[0] <<= 1;                            //shift
+        for(int i=1 ; i<sz ; i++) {           
+            mask[i-1] |= mask[i] >> 63;               
+            mask[i] <<= 1;                         
+        }
+        mask[sz-1] |= 1; // checar se deveria ser dentro do for    
+    }
+}
+
+int search(const string& txt) {
+    vector<vector<ull>> matchs(err+1, vector<ull>(sz, -1));
+    vector<vector<ull>> prevs(err+1, vector<ull>(sz, -1));
+    vector<ull> temp(sz, -1);
+    
+    int aux = sz * sizeof(ull);
+
+    for(int i=1; i<err+1;i++) {
+        matchs[i][sz-1] <<= i;
+    }
+
+    for(char c: txt) {
+        vector<ull> match = compute(c, matchs, prevs, temp, aux, err, sz);
+        
+        if(~match[0] & literal) {
+            return 1;
+        }
+    }  // ends for char
+
+    vector<ull> match = compute('\n', matchs, prevs, temp, aux, err, sz); 
     
     if(~match[0] & literal) {
         return 1;
     }
-
     return 0;
-
 }
 
 
@@ -175,8 +139,8 @@ int WumSearch(const string &txt, const string &pat, int err = 0) {
 
 int main() {
     //cout<<"aa"<<endl;
-    string txt = "abazzzzzzzcaba";
-    string pat = "aba";
-    int ans = WumSearch(txt, pat, 0);
+    string txt = "abcde";
+    string pat = "cde";
+    int ans = WumSearch(txt, pat, 2);
     cout<<ans<<endl;
 }
