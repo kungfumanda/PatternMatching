@@ -5,7 +5,7 @@
 #include "algorithms/ahoCorasick.h"
 #include "algorithms/ukkonen.h"
 #include "algorithms/brute.h"
-#include "algorithms/wumamber.h"
+#include "algorithms/wumanber.h"
 #include <fstream>
 #include <set>
 #include <map>
@@ -111,7 +111,7 @@ int matchPattern(string line, string alg, int err = 0) {
     return kmpMatchPattern(line);
   }else if (alg == "Ukkonen") {
     return ukkonenMatchPattern(line);
-  }else if (alg == "WuMamber") {
+  }else if (alg == "WuManber") {
     return wumMatchPattern(line, err);
   }else if (alg == "AhoCorasick") {
     return ahoSearch(line);
@@ -134,7 +134,7 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
     for (string pat: pat_list) {
       ukkonenAddPattern(pat, err);
     }
-  }else if (alg == "WuMamber") {
+  }else if (alg == "WuManber") {
     for (string pat: pat_list) {
       wumAddPattern(pat, err);
     }
