@@ -7,11 +7,10 @@
 #include <vector>
 
 using namespace std;
-typedef int ukkState;
 
 // Char size
 const int delta_size = 256;
-const int max_patt_size = 1e4;
+const int max_patt_size = 1000;
 // Finish nodes
 unordered_set<int> F[max_patt_size];
 // Transitions
@@ -36,7 +35,7 @@ void ukkonenAddPattern(string s, int err_ukkor = 0) {
 
   queue<int> q;
   map<int, vector<int> > stateMap;
-  map<vector<int>, ukkState > revStateMap;
+  map<vector<int>, int > revStateMap;
   stateMap[1] = state;
   revStateMap[state] = 1;
   q.push(1);
@@ -83,10 +82,11 @@ vector<int> searchUkk(const string& txt, int pat_id) {
 
 void ukkClearData() {
   pattern_count = 0;
-  for(int i = 0; i < delta_size; i++){
-    for(int j = 0; j<max_patt_size; j++) {
-      delta[i][j].clear();
-      F[j].clear();
+  ukkonenPatList.clear();
+  for(int j = 0; j<max_patt_size; j++) {
+    F[j].clear();
+    for(int i = 0; i<delta_size; i++) {
+      delta[j][i].clear();
     }
   }
 }
