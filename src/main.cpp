@@ -104,25 +104,58 @@ int parse_args(int argc, char* argv[]) {
   return 0;
 }
 
-int runAlg(string line, string pat, string alg, int err = 0) {
+int matchPattern(string line, string alg, int err = 0) {
   if(alg == "BruteForce") {
-    return bruteMatchPattern(line, pat, err).size();
+    return bruteMatchPatternList(line);
   }else if (alg == "KMP") {
-    return kmpMatchPattern(line, pat);
+    return kmpMatchPattern(line);
   }else if (alg == "Ukkonen") {
-    return ukkMatchPattern(line, pat, err).size();
+    return ukkonenMatchPattern(line);
   }else if (alg == "WuMamber") {
-    return wumSearch(line, pat, err);
+    return wumMatchPattern(line, err);
   }else if (alg == "AhoCorasick") {
-    return ahoCorasickMatchPattern(line, pat);
+    return ahoSearch(line);
   }else {
     cerr << "Algorithm not available, using Ukkonen as default." << endl;
-    return ukkMatchPattern(line, pat, err).size();
+    return ukkonenMatchPattern(line);
+  }
+}
+
+void addPatterns(vector<string> pat_list, string alg, int err = 0) {
+  if(alg == "BruteForce") {
+    bruteAddPatternListAndError(pat_list, err);
+  }else if (alg == "KMP") {
+    for (string pat: pat_list) {
+      kmpAddPattern(pat);
+    }
+  }else if (alg == "Ukkonen") {
+    ukkClearData();
+    for (string pat: pat_list) {
+      ukkonenAddPattern(pat, err);
+    }
+  }else if (alg == "WuMamber") {
+    for (string pat: pat_list) {
+      wumAddPattern(pat, err);
+    }
+  }else if (alg == "AhoCorasick") {
+    ahoClearData();
+    for (string pat: pat_list) {
+      addPatternAho(pat);
+    }
+    addFails();
+  }else {
+    cerr << "Algorithm not available, using default." << endl;
+    for (string pat: pat_list) {
+      addPatternAho(pat);
+    }
+    addFails();
   }
 }
 
 int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, string alg) {
   int occ_count = 0;
+  addPatterns(pattern_list, alg, err);
+
   for(auto file_name: files_list) {
     string line = "a";
     int line_count = 1;
@@ -136,15 +169,11 @@ int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, 
     while(!file->eof()) {
       getline(*file, line);
       bool found_oc = 0;
-      for(auto pat: pattern_list) {
-        int line_ocs = runAlg(line, pat, alg, err);
-        if(line_ocs > 0) {
-          if (!only_count) {
-            cout << file_name << " " << line_count << " " << line <<endl;
-          }
-          occ_count++;
-          break;
+      if (matchPattern(line, alg, err)) {
+        if (!only_count) {
+          cout << file_name << " " << line_count << " " << line <<endl;
         }
+        occ_count++;
       }
       line_count++;
     }

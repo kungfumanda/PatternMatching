@@ -8,5 +8,7 @@ for alg in ${ALG_LIST[*]}; do
   time ./pmt --count --algorithm $alg --edit $EDIT_SIZE --pattern $PATH_PATTERNS $PATH_TEXT
 done
 
+./pmt --count --algorithm AhoCorasick --pattern ./data/patts ./data/text
+
 echo "grep"
-grep  -c  -$EDIT_SIZE $PATH_PATTERNS $PATH_TEXT
+time grep  -c  -$EDIT_SIZE $PATH_PATTERNS $PATH_TEXT

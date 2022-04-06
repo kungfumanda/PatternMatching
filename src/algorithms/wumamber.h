@@ -18,10 +18,12 @@ int sz;
 int err_wu;
 ull literal;
 
+vector<string> wunamberPatList;
+
 void orr(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
         mas[i] |= nas[i];                      
-    } 
+    }
 }
 
 void shift(vector<ull> &mas){
@@ -144,10 +146,22 @@ int searchWu(const string& txt) {
     return 0;
 }
 
-
 int wumSearch(const string &txt, const string &pat, int err = 0) {
-    //cout<<"aa"<<endl;
     setPatternWu(pat, err);
     err_wu = err;
     return searchWu(txt);
+}
+
+void wumAddPattern(const string& pat, int err = 0) {
+    err_wu = err;
+    wunamberPatList.push_back(pat);
+}
+
+int wumMatchPattern (const string &txt, int err = 0) {
+    for (string pat: wunamberPatList) {
+        if (wumSearch(txt, pat, err)) {
+            return 1;
+        }
+    }
+    return 0;
 }

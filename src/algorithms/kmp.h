@@ -1,8 +1,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
+
+vector<string> patListKMP;
+map<string, vector<int>> fromPatToBorder;
 
 vector<int> getBorder(string pat) {
   int n = pat.size();
@@ -34,7 +38,16 @@ int kmpMatchPattern(const string &txt, const string &pat, const vector<int> &bor
   return 0;
 }
 
-int kmpMatchPattern (const string &txt, const string &pat) {
-  vector<int> border = getBorder(pat);
-  return kmpMatchPattern(txt, pat, border);
+void kmpAddPattern(const string pat) {
+  patListKMP.push_back(pat);
+  fromPatToBorder[pat] = getBorder(pat);
+}
+
+int kmpMatchPattern(const string &txt) {
+  for(auto patBorderTuple: fromPatToBorder) {
+    if (kmpMatchPattern(txt, patBorderTuple.first, patBorderTuple.second)) {
+      return 1;
+    }
+  }
+  return 0;
 }

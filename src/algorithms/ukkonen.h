@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
-#include <set>
+#include <unordered_set>
+#include <unordered_map>
 #include <map>
 #include <queue>
 #include <vector>
@@ -8,33 +9,25 @@
 using namespace std;
 typedef int ukkState;
 
-set<ukkState> F;
+// Char size
 const int delta_size = 256;
-map<ukkState, ukkState> delta[delta_size];
+const int max_patt_size = 1e4;
+// Finish nodes
+unordered_set<int> F[max_patt_size];
+// Transitions
+unordered_map<int, int> delta[max_patt_size][delta_size];
+vector<string> ukkonenPatList;
 string pattern;
 int pattern_size;
+int pattern_count = 0;
 int err_ukk;
 
-vector<int> make_transition(const vector<int>& base, int chr) {
-  vector<int> state = vector<int>(pattern_size + 1, 0);
-  for(int i = 1; i <= pattern_size; i++) {
-      state[i] = min(min(base[i] + 1, base[i-1] + (chr != pattern[i-1] ? 1 : 0)), min(err_ukk+1, state[i-1]+1));
-  }
-  return state;
-}
-
-void clearDataUkk() {
-  F.clear();
-  for(int i = 0; i < delta_size; i++){
-    delta[i].clear();
-  }
-}
-
-void setPattern(string s, int err_ukkor = 0) {
+void ukkonenAddPattern(string s, int err_ukkor = 0) {
+  int pat_id = pattern_count++;
+  ukkonenPatList.push_back(s);
   err_ukk = err_ukkor;
   pattern = s;
   pattern_size = pattern.size();
-  clearDataUkk();
 
   vector<int> state;
   for(int i = 0, sze = s.length(); i <= sze; i++) {
@@ -42,7 +35,7 @@ void setPattern(string s, int err_ukkor = 0) {
   }
 
   queue<int> q;
-  map<ukkState, vector<int> > stateMap;
+  map<int, vector<int> > stateMap;
   map<vector<int>, ukkState > revStateMap;
   stateMap[1] = state;
   revStateMap[state] = 1;
@@ -53,7 +46,11 @@ void setPattern(string s, int err_ukkor = 0) {
     q.pop();
     state = stateMap[now];
     for(int i = 0; i < delta_size; i++) { 
-      auto next_state = make_transition(state, i);
+      vector<int> next_state;
+      next_state.push_back(0);
+      for(int j = 1; j <= pattern_size; j++) {
+          next_state.push_back(min(min(state[j] + 1, state[j-1] + (i != pattern[j-1] ? 1 : 0)), min(err_ukk+1, next_state[j-1]+1)));
+      }
       int next_state_id = revStateMap[next_state];
 
       if(!next_state_id) {
@@ -64,33 +61,50 @@ void setPattern(string s, int err_ukkor = 0) {
       }
 
       if(next_state[pattern_size] <= err_ukk) {
-        F.insert(next_state_id);
+        F[pat_id].insert(next_state_id);
       }
 
-      delta[i][now] = next_state_id;
+      delta[pat_id][i][now] = next_state_id;
     }
   }
 }
 
-vector<int> searchUkk(const string& txt) {
+vector<int> searchUkk(const string& txt, int pat_id) {
   int state = 1, occ = 0;
   vector<int> ans;
   for(int i = 0; i < txt.size(); i++) {
-    state = delta[txt[i]][state];
-    if(F.count(state)){
+    state = delta[pat_id][txt[i]][state];
+    if(F[pat_id].count(state)){
       ans.push_back(i);
     }
   }
   return ans;
 }
 
-vector<int> ukkMatchPattern(const string &txt, const string &pat, int err_ukk = 0) {
-  clearDataUkk();
-  setPattern(pat, err_ukk);
-  vector<int> end_pat = searchUkk(txt);
+void ukkClearData() {
+  pattern_count = 0;
+  for(int i = 0; i < delta_size; i++){
+    for(int j = 0; j<max_patt_size; j++) {
+      delta[i][j].clear();
+      F[j].clear();
+    }
+  }
+}
+
+vector<int> ukkMatchPattern(const string &txt, int pat_id) {
+  vector<int> end_pat = searchUkk(txt, pat_id);
   vector<int> ans;
   for(int end: end_pat) {
-    ans.push_back(end - pat.size() + 1);
+    ans.push_back(end - ukkonenPatList[pat_id].size() + 1);
   }
   return ans;
+}
+
+int ukkonenMatchPattern(string &txt) {
+  for(int i = 0; i<pattern_count; i++) {
+    if (!ukkMatchPattern(txt, i).empty()) {
+      return 1;
+    }
+  }
+  return 0;
 }
