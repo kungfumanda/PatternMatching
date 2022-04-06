@@ -34,24 +34,15 @@ void shift(vector<ull> &mas){
     }
 }
 
-void shiftOr(vector<ull> &mask, vector<ull> &charmask) {
-    if(mask.size() == 0){
-        vector<ull> aux(sz, -1);
-        charmask.assign(aux.begin(), aux.end());
-    }else {
-        shift(charmask);
-        orr(charmask, mask);
-    }
-}
-
 void andd(vector<ull> &mas, vector<ull> &nas){
     for(int i=0 ; i<sz ; i++) {           
         mas[i] &= nas[i];                      
-    }  
+    }
 }
 
 vector<ull>& generateMatch(char c) {
-    vector<ull> &match = matchs[0]; //starts compute
+    // Read next char and process next bitmap
+    vector<ull> &match = matchs[0];
     
     for(int i=0; i<err_wu; i++){ //changes the prev
         for(int j=0; j<sz; j++) {
@@ -64,17 +55,18 @@ vector<ull>& generateMatch(char c) {
         vector<ull> aux(sz, -1);
         match.assign(aux.begin(), aux.end());
     }else {
+        // Shift or on match
         shift(match);
         orr(match, mask);
     }
-    // shiftOr(mask, match);
-    for (int r=1; r<=err_wu;r++) {
+    for (int r=1; r<=err_wu; r++) {
         vector<ull> &prev = prevs[r-1];
         vector<ull> &matchR = matchs[r];
         if(mask.size() == 0){
             vector<ull> aux(sz, -1);
             matchR.assign(aux.begin(), aux.end());
         }else {
+            // Shift or on matchR
             shift(matchR);
             orr(matchR, mask);
         }
@@ -120,29 +112,32 @@ void setPatternWu(string pat, int err = 0) {
     }
 }
 
+void wuuSetUpSearch() {
+    matchs = vector<vector<ull>>(err_wu+1, vector<ull>(sz, -1));
+    prevs = vector<vector<ull>>(err_wu+1, vector<ull>(sz, -1));
+    temp = vector<ull>(sz);
+
+    for(int i=1; i <= err_wu;i++) {
+        matchs[i][sz-1] <<= i;
+    }
+}
+
 int searchWu(const string& txt) {
     matchs = vector<vector<ull>>(err_wu+1, vector<ull>(sz, -1));
     prevs = vector<vector<ull>>(err_wu+1, vector<ull>(sz, -1));
     temp = vector<ull>(sz);
     
-    int aux = sz * sizeof(ull);
-
     for(int i=1; i<err_wu+1;i++) {
         matchs[i][sz-1] <<= i;
     }
 
+    // starts for char
     for(char c: txt) {
         vector<ull> &match = generateMatch(c);
         if(~match[0] & literal) {
             return 1;
         }
     }  // ends for char
-
-    vector<ull> match = generateMatch('\n'); 
-    
-    if(~match[0] & literal) {
-        return 1;
-    }
     return 0;
 }
 

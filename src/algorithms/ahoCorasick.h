@@ -20,7 +20,7 @@ void addPatternAho(string s) {
     }
     node = trie[node][c];
   }
-  terminal[node] = 1;
+  terminal[node]++;
 }
 
 void addFails(){

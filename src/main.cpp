@@ -172,12 +172,12 @@ int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, 
 
     while(!file->eof()) {
       getline(*file, line);
-      bool found_oc = 0;
-      if (matchPattern(line, algorithm, err)) {
+      int cur_oc = matchPattern(line, algorithm, err);
+      if (cur_oc) {
         if (!only_count) {
           cout << file_name << " " << line_count << " " << line <<endl;
         }
-        occ_count++;
+        occ_count+=cur_oc;
       }
       line_count++;
     }
