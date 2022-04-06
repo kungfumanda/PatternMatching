@@ -116,13 +116,13 @@ int matchPattern(string line, string alg, int err = 0) {
   }else if (alg == "AhoCorasick") {
     return ahoSearch(line);
   }else {
-    cerr << "Algorithm not available, using Ukkonen as default." << endl;
-    return ukkonenMatchPattern(line);
+    return ahoSearch(line);
   }
 }
 
 void addPatterns(vector<string> pat_list, string alg, int err = 0) {
   if(alg == "BruteForce") {
+    // BruteForce Will ignore error option.
     bruteAddPatternListAndError(pat_list, err);
   }else if (alg == "KMP") {
     // KMP Will ignore error option.
@@ -147,10 +147,12 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
     addFails();
   }else {
     cerr << "Algorithm not available, using default." << endl;
+    ahoClearData();
     for (string pat: pat_list) {
       addPatternAho(pat);
     }
     addFails();
+    algorithm = "AhoCorasick";
   }
 }
 
@@ -171,7 +173,7 @@ int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, 
     while(!file->eof()) {
       getline(*file, line);
       bool found_oc = 0;
-      if (matchPattern(line, alg, err)) {
+      if (matchPattern(line, algorithm, err)) {
         if (!only_count) {
           cout << file_name << " " << line_count << " " << line <<endl;
         }
@@ -188,7 +190,7 @@ int main(int argc, char* argv[]) {
   if(help) {
     cout<<"Usage: pmt [options] pattern textfile [textfile...]"<<endl;
     cout<<"Options:"<<endl;
-    cout<<"  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumanber)"<<endl;
+    cout<<"  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and WuManber)"<<endl;
     cout<<"  -p, --pattern PATTERN_FILE    Grabs multiple patterns at once from a file, when this option is passed, the pattern parameter should not be passed."<<endl;
     cout<<"  -c, --count                   Hides the line results and displays only the total number of occurences"<<endl;
     cout<<"  -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm"<<endl;

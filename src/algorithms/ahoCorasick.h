@@ -20,11 +20,7 @@ void addPatternAho(string s) {
     }
     node = trie[node][c];
   }
-  if(terminal.size() == node) {
-    terminal.push_back(1);
-  }else {
-    terminal[node] = 1;
-  }
+  terminal[node] = 1;
 }
 
 void addFails(){
@@ -62,6 +58,8 @@ void ahoClearData() {
   fail.clear();
   terminal.clear();
   trie.clear();
+  fail.push_back(0);
+  terminal.push_back(0);
   trie.push_back(vector<int>(256, -1));
 }
 

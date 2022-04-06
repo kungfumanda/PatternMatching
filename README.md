@@ -23,7 +23,7 @@ By running the previous command a `pmt` binary file will be included in the `/bi
 ```
 Usage: pmt [options] pattern textfile [textfile...]
 Options:
-  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumanber)
+  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and WuManber)
   -p, --pattern PATTERN_FILE    Grabs multiple patterns at once from a file, when this option is passed, the pattern parameter should not be passed.
   -c, --count                   Hides the line results and displays only the total number of occurences
   -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm
