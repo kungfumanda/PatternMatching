@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
   if(help) {
     cout << "Usage: pmt [options] pattern textfile [textfile...]"<<endl;
     cout << "Options:"<<endl;
-    cout << "  -a, --algorithm ALGORITHM     Set the algorithm to be used(options are )"<<endl;
+    cout << "  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumamber)"<<endl;
     cout << "  -p, --pattern PATTERN_FILE    Grabs the patterns given in a file, when this option is passed, the pattern parameter should not be passed."<<endl;
     cout << "  -c, --count                   Displays only the number of occurences for each pattern"<<endl;
     cout << "  -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm"<<endl;
