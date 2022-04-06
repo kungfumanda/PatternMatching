@@ -5,7 +5,7 @@
 #include "algorithms/ahoCorasick.h"
 #include "algorithms/ukkonen.h"
 #include "algorithms/brute.h"
-#include "algorithms/wumamber.h"
+#include "algorithms/wumanber.h"
 #include <fstream>
 #include <set>
 #include <map>
@@ -111,7 +111,7 @@ int matchPattern(string line, string alg, int err = 0) {
     return kmpMatchPattern(line);
   }else if (alg == "Ukkonen") {
     return ukkonenMatchPattern(line);
-  }else if (alg == "WuMamber") {
+  }else if (alg == "WuManber") {
     return wumMatchPattern(line, err);
   }else if (alg == "AhoCorasick") {
     return ahoSearch(line);
@@ -133,7 +133,7 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
     for (string pat: pat_list) {
       ukkonenAddPattern(pat, err);
     }
-  }else if (alg == "WuMamber") {
+  }else if (alg == "WuManber") {
     for (string pat: pat_list) {
       wumAddPattern(pat, err);
     }
@@ -186,7 +186,7 @@ int main(int argc, char* argv[]) {
   if(help) {
     cout << "Usage: pmt [options] pattern textfile [textfile...]"<<endl;
     cout << "Options:"<<endl;
-    cout << "  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumamber)"<<endl;
+    cout << "  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumanber)"<<endl;
     cout << "  -p, --pattern PATTERN_FILE    Grabs the patterns given in a file, when this option is passed, the pattern parameter should not be passed."<<endl;
     cout << "  -c, --count                   Displays only the number of occurences for each pattern"<<endl;
     cout << "  -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm"<<endl;

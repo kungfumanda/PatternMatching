@@ -1,7 +1,7 @@
 PATH_PATTERNS=./data/patts
 PATH_TEXT=./data/text
 EDIT_SIZE=1
-ALG_LIST=('AhoCorasick' 'WuMamber' 'Ukkonen' 'BruteForce' 'KMP')
+ALG_LIST=('AhoCorasick' 'WuManber' 'Ukkonen' 'BruteForce' 'KMP')
 
 for alg in ${ALG_LIST[*]}; do
   echo $alg
