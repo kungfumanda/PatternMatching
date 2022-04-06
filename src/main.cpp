@@ -125,6 +125,7 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
   if(alg == "BruteForce") {
     bruteAddPatternListAndError(pat_list, err);
   }else if (alg == "KMP") {
+    // KMP Will ignore error option.
     for (string pat: pat_list) {
       kmpAddPattern(pat);
     }
@@ -138,6 +139,7 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
       wumAddPattern(pat, err);
     }
   }else if (alg == "AhoCorasick") {
+    // AhoCorasick Will ignore error option.
     ahoClearData();
     for (string pat: pat_list) {
       addPatternAho(pat);
@@ -184,13 +186,13 @@ int searchWithSimplePat(vector<string> files_list, vector<string> pattern_list, 
 int main(int argc, char* argv[]) {
   parse_args(argc, argv);
   if(help) {
-    cout << "Usage: pmt [options] pattern textfile [textfile...]"<<endl;
-    cout << "Options:"<<endl;
-    cout << "  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumamber)"<<endl;
-    cout << "  -p, --pattern PATTERN_FILE    Grabs the patterns given in a file, when this option is passed, the pattern parameter should not be passed."<<endl;
-    cout << "  -c, --count                   Displays only the number of occurences for each pattern"<<endl;
-    cout << "  -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm"<<endl;
-    cout << "  -h, --help                    Shows the guide"<<endl;
+    cout<<"Usage: pmt [options] pattern textfile [textfile...]"<<endl;
+    cout<<"Options:"<<endl;
+    cout<<"  -a, --algorithm ALGORITHM     Set the algorithm to be used (options are AhoCorasick, BruteForce, KMP, Ukkonen and Wumamber)"<<endl;
+    cout<<"  -p, --pattern PATTERN_FILE    Grabs multiple patterns at once from a file, when this option is passed, the pattern parameter should not be passed."<<endl;
+    cout<<"  -c, --count                   Hides the line results and displays only the total number of occurences"<<endl;
+    cout<<"  -e, --edit DISTANCE           Finds all approximate occurrences of the pattern within the given editing distance, will be ignored if non appliable in given algorithm"<<endl;
+    cout<<"  -h, --help                    Shows this guide"<<endl;
     return 0;
   }
 

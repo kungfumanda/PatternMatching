@@ -1,10 +1,4 @@
-pwd := $(CURDIR)
-pathvar := ${PATH}
-seqtest := 1
-
 pmt:
-	g++ src/main.cpp -o pmt -std=c++14 -O3
+	g++ src/main.cpp -o $(CURDIR)/bin/pmt -std=c++14 -O3
 add-to-paths: 
-	export PATH=$(pathvar):$(pwd)/bin/
-
-## TODO: Add tests here
+	export PATH=${PATH}:$(CURDIR)/bin/
