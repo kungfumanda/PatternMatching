@@ -1,6 +1,6 @@
 PATH_PATTERNS=./data/patts
-PATH_TEXT=./data/text
-EDIT_SIZE=1
+PATH_TEXT=./../english
+EDIT_SIZE=0
 ALG_LIST=('AhoCorasick' 'WuManber' 'Ukkonen' 'BruteForce' 'KMP' 'default')
 
 for alg in ${ALG_LIST[*]}; do

@@ -15,7 +15,7 @@ vector<ull> temp;
 vector<ull> mask;
 int ascii_l = 256;
 int sz;
-int err_wu;
+int err_wu = 0;
 ull literal;
 
 vector<string> wunamberPatList;
@@ -40,7 +40,7 @@ void andd(vector<ull> &mas, vector<ull> &nas){
     }
 }
 
-vector<ull>& generateMatch(char c) {
+vector<ull>& generateMatch(unsigned char c) {
     // Read next char and process next bitmap
     vector<ull> &match = matchs[0];
     
@@ -96,7 +96,7 @@ void setPatternWu(string pat, int err = 0) {
 
     masks = vector<vector<ull>>(256);
 
-    for (char c : pat) {
+    for (unsigned char c : pat) {
         vector<ull> &aux = masks[c];
 
         if(aux.size()==0) {
@@ -132,7 +132,7 @@ int searchWu(const string& txt) {
     }
 
     // starts for char
-    for(char c: txt) {
+    for(unsigned char c: txt) {
         vector<ull> &match = generateMatch(c);
         if(~match[0] & literal) {
             return 1;

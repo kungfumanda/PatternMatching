@@ -48,7 +48,8 @@ void ukkonenAddPattern(string s, int err_ukkor = 0) {
       vector<int> next_state;
       next_state.push_back(0);
       for(int j = 1; j <= pattern_size; j++) {
-          next_state.push_back(min(min(state[j] + 1, state[j-1] + (i != pattern[j-1] ? 1 : 0)), min(err_ukk+1, next_state[j-1]+1)));
+          unsigned char cur_char = pattern[j-1];
+          next_state.push_back(min(min(state[j] + 1, state[j-1] + (i != cur_char)), min(err_ukk+1, next_state[j-1]+1)));
       }
       int next_state_id = revStateMap[next_state];
 

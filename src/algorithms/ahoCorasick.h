@@ -11,7 +11,7 @@ vector<vector<int>> trie;
 
 void addPatternAho(string s) {  
   int node = 0, pos = 0;
-  for (char c: s) {
+  for (unsigned char c: s) {
     if (trie[node][c] == -1) {
       trie[node][c] = trie.size();
       trie.push_back(vector<int>(charSize,-1));
@@ -44,7 +44,7 @@ void addFails(){
 
 int ahoSearch(const string &s) {
   int node = 0;
-  for(char c: s) {
+  for(unsigned char c: s) {
     node = trie[node][c];
     if(terminal[node]) {
       return 1;
