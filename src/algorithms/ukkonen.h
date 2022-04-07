@@ -9,12 +9,12 @@
 using namespace std;
 
 // Char size
-const int delta_size = 256;
+const int char_count = 256;
 const int max_patt_size = 1000;
 // Finish nodes
 unordered_set<int> F[max_patt_size];
 // Transitions
-unordered_map<int, int> delta[max_patt_size][delta_size];
+unordered_map<int, int> tree[max_patt_size][char_count];
 vector<string> ukkonenPatList;
 string pattern;
 int pattern_size;
@@ -44,27 +44,32 @@ void ukkonenAddPattern(string s, int err_ukkor = 0) {
     int now = q.front();
     q.pop();
     state = stateMap[now];
-    for(int i = 0; i < delta_size; i++) { 
+    for(int i = 0; i < char_count; i++) { 
+      // Build next state vector
       vector<int> next_state;
       next_state.push_back(0);
       for(int j = 1; j <= pattern_size; j++) {
           unsigned char cur_char = pattern[j-1];
           next_state.push_back(min(min(state[j] + 1, state[j-1] + (i != cur_char)), min(err_ukk+1, next_state[j-1]+1)));
       }
+
+      // Search rev state map for new discovered state, if 0 its a new one.
       int next_state_id = revStateMap[next_state];
 
       if(!next_state_id) {
+        // New state found, adding it to queue
         revStateMap[next_state] = next_free_id;
         stateMap[next_free_id] = next_state;
         next_state_id = next_free_id++;
         q.push(next_state_id);
       }
-
+      // Add this state as answer state if num errors to achieve is less then edit distance
       if(next_state[pattern_size] <= err_ukk) {
         F[pat_id].insert(next_state_id);
       }
 
-      delta[pat_id][i][now] = next_state_id;
+      // Update tree with next state
+      tree[pat_id][i][now] = next_state_id;
     }
   }
 }
@@ -73,7 +78,7 @@ vector<int> searchUkk(const string& txt, int pat_id) {
   int state = 1, occ = 0;
   vector<int> ans;
   for(int i = 0; i < txt.size(); i++) {
-    state = delta[pat_id][txt[i]][state];
+    state = tree[pat_id][txt[i]][state];
     if(F[pat_id].count(state)){
       ans.push_back(i);
     }
@@ -86,8 +91,8 @@ void ukkClearData() {
   ukkonenPatList.clear();
   for(int j = 0; j<max_patt_size; j++) {
     F[j].clear();
-    for(int i = 0; i<delta_size; i++) {
-      delta[j][i].clear();
+    for(int i = 0; i<char_count; i++) {
+      tree[j][i].clear();
     }
   }
 }

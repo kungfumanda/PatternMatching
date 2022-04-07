@@ -104,6 +104,18 @@ int parse_args(int argc, char* argv[]) {
   return 0;
 }
 
+string findBestAlgorithm(vector<string> &pats, int err = 0) {
+  if(err) {
+    return "Ukkonen";
+  }else {
+    if (pats.size() > 1) {
+      return "AhoCorasick";
+    }else {
+      return "KMP";
+    }
+  }
+}
+
 int matchPattern(string line, string alg, int err = 0) {
   if(alg == "BruteForce") {
     return bruteMatchPatternList(line);
@@ -116,7 +128,7 @@ int matchPattern(string line, string alg, int err = 0) {
   }else if (alg == "AhoCorasick") {
     return ahoSearch(line);
   }else {
-    return ahoSearch(line);
+    return wumMatchPattern(line, err);
   }
 }
 
@@ -146,13 +158,9 @@ void addPatterns(vector<string> pat_list, string alg, int err = 0) {
     }
     addFails();
   }else {
-    cerr << "Algorithm not available, using default." << endl;
-    ahoClearData();
-    for (string pat: pat_list) {
-      addPatternAho(pat);
-    }
-    addFails();
-    algorithm = "AhoCorasick";
+    algorithm = findBestAlgorithm(pat_list, err);
+    cout<<algorithm<<endl;
+    return addPatterns(pat_list, algorithm, err);
   }
 }
 
