@@ -106,7 +106,11 @@ int parse_args(int argc, char* argv[]) {
 
 string findBestAlgorithm(vector<string> &pats, int err = 0) {
   if(err) {
-    return "Ukkonen";
+    if (err >= 6) {
+      return "WuManber";
+    }else {
+      return "Ukkonen";
+    }
   }else {
     if (pats.size() > 1) {
       return "AhoCorasick";
