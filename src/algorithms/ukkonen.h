@@ -34,16 +34,16 @@ void ukkonenAddPattern(string s, int err_ukkor = 0) {
   }
 
   queue<int> q;
-  map<int, vector<int> > stateMap;
-  map<vector<int>, int > revStateMap;
-  stateMap[1] = state;
-  revStateMap[state] = 1;
+  map<int, vector<int>> state_map;
+  map<vector<int>, int> rev_state_map;
+  state_map[1] = state;
+  rev_state_map[state] = 1;
   q.push(1);
   int next_free_id = 2;
   while(!q.empty()) {
     int now = q.front();
     q.pop();
-    state = stateMap[now];
+    state = state_map[now];
     for(int i = 0; i < char_count; i++) { 
       // Build next state vector
       vector<int> next_state;
@@ -54,12 +54,12 @@ void ukkonenAddPattern(string s, int err_ukkor = 0) {
       }
 
       // Search rev state map for new discovered state, if 0 its a new one.
-      int next_state_id = revStateMap[next_state];
+      int next_state_id = rev_state_map[next_state];
 
       if(!next_state_id) {
         // New state found, adding it to queue
-        revStateMap[next_state] = next_free_id;
-        stateMap[next_free_id] = next_state;
+        rev_state_map[next_state] = next_free_id;
+        state_map[next_free_id] = next_state;
         next_state_id = next_free_id++;
         q.push(next_state_id);
       }

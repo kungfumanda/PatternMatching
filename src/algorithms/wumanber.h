@@ -89,9 +89,12 @@ vector<ull>& generateMatch(unsigned char c) {
 
 void setPatternWu(string pat, int err = 0) {
 
+    // Multiplica por 64 pq cada char tem seu mask
     sz = (((int)(pat.size() - 1)) >> 6) + 1;
+    // Caso base, tudo 0 menos o mais significativo
     literal = 1ll << ((pat.size()-1)%64);
     vector<ull> mask(sz, -1);
+    // -2 coloca todos os bits como 1 menos o primeiro
     mask[sz-1] = -2;
 
     masks = vector<vector<ull>>(256);
