@@ -10,6 +10,9 @@
 
 using namespace std;
 
+string text;
+string pat;
+
 vector<int> sort_letters(string &txt) {
   int n = txt.size();
   set<int> chars;
@@ -77,10 +80,46 @@ vector<int> build_sarr(vector<int> &last_pos) {
     sa[last_pos[i]] = i;
   }
   return sa;
-} 
+}
+
+bool is_first(const int &pos1, const string &pat) {
+  int n = text.size();
+  int m = pat.size();
+  int i = pos1, j = 0;
+  for( ; i < n && j < m; i++, j++) {
+    if(text[i] != pat[j]) {
+      return text[i] < pat[j];
+    }
+  }
+  return j != m;
+}
+
+bool is_after(const int &pos1, const string &pat) {
+  int n = text.size();
+  int m = pat.size();
+  int i = pos1, j = 0;
+  for( ; i < n && j < m; i++, j++) {
+    if(text[i] != pat[j]) {
+      return text[i] < pat[j];
+    }
+  }
+  return 1;
+}
+
+int search_sarr(string& pat, vector<int> &sarr) {
+  int lower = lower_bound(sarr.begin(), sarr.end(), pat, is_first) - sarr.begin();
+  int upper = lower_bound(sarr.begin(), sarr.end(), pat, is_after) - sarr.begin();
+  if (upper >= lower) {
+    return upper - lower;
+  }else {
+    return 0;
+  }
+}
 
 int main() {
-  string txt = "aeaecbd";
+  string txt = "abracadabra";
+  text = txt;
+  pat = "ra";
   vector<vector<int>> pos = build_pos(txt);
   vector<int> sarr = build_sarr(pos[pos.size()-1]);
   
@@ -91,8 +130,19 @@ int main() {
     cout<<endl;
   }
   for(auto x: sarr) {
-    cout<<x<<", ";
+    cout<<txt.substr(x, txt.size() - x)<<endl;
   }
   cout<<endl;
+  for(int i = 0; i<txt.size(); i++) {
+    cout<<is_first(sarr[i], pat)<<", ";
+  }
+  cout<<endl;
+  for(int i = 0; i<txt.size(); i++) {
+    cout<<is_after(sarr[i], pat)<<", ";
+  }
+  cout<<endl;
+  int l = search_sarr(pat, sarr);
+  cout<<l<<endl;
+
   return 0;
 }
